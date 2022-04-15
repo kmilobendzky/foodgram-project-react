@@ -41,7 +41,7 @@ class Tag(models.Model):
     )
 
     class Meta:
-        ordering = ('name')
+        ordering = ['name']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -59,14 +59,9 @@ class Ingredient(models.Model):
     )
 
     class Meta:
-        ordering = ('id',)
+        ordering = ['id',]
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['name', 'measurement_unit'],
-                        name='Ингредиент должен быть уникальным!')
-        ]
 
     def __str__(self):
         return f'{self.name}'
@@ -127,26 +122,21 @@ class IngredientAmount(models.Model):
         ordering = ['-id']
         verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['ingredient', 'recipe'],
-                name='Ингредиенты и рецепты должны быть уникальными!')
-        ]
 
     def __str__(self):
         return f'{self.ingredient}: {self.recipe}'
 
 
-class Favorite(models.Model):
+class Favourite(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
-        verbose_name='User'
+        verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        related_name='favorite_recipe',
+        related_name='favourite_recipe',
         verbose_name='Избранный рецепт',
     )
 
@@ -154,12 +144,6 @@ class Favorite(models.Model):
         ordering = ['-id']
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'],
-                name = 'Пользователь и рецепт должны быть уникальными!'
-            )
-        ]
 
     def __str__(self):
         return f'{self.user}: {self.recipe}'
@@ -176,19 +160,13 @@ class ShoppingCart(models.Model):
         Recipe,
         on_delete=models.CASCADE,
         related_name='cart_recipe',
-        varbose_name='Рецепт',
+        verbose_name='Рецепт',
     )
 
     class Meta:
         ordering = ['id']
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
-        constraints = [
-            models.UniqueConstraint(
-                fields=['user', 'recipe'],
-                name='Пользователь и рецепт должны быть уникальными!'
-            )
-        ]
 
     def __str__(self):
         return f'{self.user}: {self.recipe}'

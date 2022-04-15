@@ -39,7 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
     'djoser',
+    'django_filters',
+    'drf_spectacular',
+
 ]
 
 MIDDLEWARE = [
@@ -78,7 +83,7 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.postgresql',),
+        'ENGINE': os.getenv('DB_ENGINE', default='django.db.backends.sqlite3',),
         'NAME': os.getenv('DB_NAME', default='postgres',),
         'USER': os.getenv('POSTGRES_USER', default='postgres',),
         'PASSWORD': os.getenv('POSTGRES_PASSWORD', default='postgres',),
@@ -122,13 +127,30 @@ USE_TZ = True
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.TokenAuthentication",
+        'rest_framework.authentication.TokenAuthentication',
     ),
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticatedOrReadOnly",
-    ],
+    "DEFAULT_PERMISSION_CLASSES": (
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
+    ),
 }
 
+DJOSER = {
+    "LOGIN_FIELD": "email",
+    "PASSWORD_RESET_CONFIRM_URL": "#/password/reset/confirm/{uid}/{token}",
+    "USERNAME_RESET_CONFIRM_URL": "#/username/reset/confirm/{uid}/{token}",
+    "ACTIVATION_URL": "#/activate/{uid}/{token}",
+    "SEND_ACTIVATION_EMAIL": False,
+    "SERIALIZERS": {
+        "user_create": "users.serializers.UserCreationSerializer",
+        "user": "users.serializers.UserSerializer",
+        "current_user": "users.serializers.UserSerializer",
+    },
+    "PERMISSIONS": {
+        "user": ("rest_framework.permissions.AllowAny",),
+        "user_list": ("rest_framework.permissions.AllowAny",),
+    },
+    "HIDE_USERS": False,
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
