@@ -1,6 +1,10 @@
 from django.shortcuts import render
-from api.models import Tag, Ingredient
-from api.serializers import TagSerializer, IngredientSerializer
+from api.models import Tag, Ingredient, Recipe
+from api.serializers import (
+    TagSerializer, 
+    IngredientSerializer, 
+    RecipeCreationSerializer,
+    RecipeListSerializer)
 import rest_framework.permissions as permissions
 
 
@@ -18,23 +22,10 @@ class IngredientViewSet(viewsets.ModelViewSet):
     pagination_class = None
 
     def get_queryset(self):
-        post_id = Ingredient.objects.all()
-        post = get_object_or_404(Post, pk=post_id)
-        return post.comments.all()
+        queryset = Ingredient.objects.all()
+        return queryset
 
-    def perform_create(self, serializer):
-        post_id = self.kwargs.get('post_id')
-        post = get_object_or_404(Post, pk=post_id)
-        serializer.save(author=self.request.user, post=post)
-
-    def perform_update(self, serializer):
-        if serializer.instance.author != self.request.user:
-            raise PermissionDenied('Изменение чужих комментариев запрещено!')
-        super(CommentViewSet, self).perform_update(serializer)
-
-    def perform_destroy(self, instance):
-        if instance.author != self.request.user:
-            raise PermissionDenied('Удаление чужих комментариев запрещено!')
-        return super().perform_destroy(instance)
-
-class RecipeViewSet()
+class RecipeViewSet(viewsets.ModelViewSet):
+    queryset = Recipe.objects.all()
+    serializer_class = RecipeCreationSerializer
+    
