@@ -36,3 +36,5 @@ class IngredientViewSet(viewsets.ModelViewSet):
         if instance.author != self.request.user:
             raise PermissionDenied('Удаление чужих комментариев запрещено!')
         return super().perform_destroy(instance)
+
+class RecipeViewSet()
