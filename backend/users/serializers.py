@@ -53,7 +53,7 @@ class FollowSerializer(serializers.ModelSerializer):
         source='following.id'
     )
     username = serializers.ReadOnlyField(
-        suorce='following.username'
+        source='following.username'
     )
     first_name = serializers.ReadOnlyField(
         suorce='following.first_name'
