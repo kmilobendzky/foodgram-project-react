@@ -10,13 +10,16 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 class TagSerializer(serializers.ModelSerializer):
-    model = Tag
-    fields = '__all__'
+    class Meta:
+        model = Tag
+        fields = '__all__'
 
 
 class IngredientSerializer(serializers.ModelSerializer):
-    model = Ingredient
-    fields = '__all__'
+    class Meta:
+        model = Ingredient
+        fields = '__all__'
+
 
 class IngredientAmountSerializer(serializers.ModelSerializer):
     id = serializers.ReadOnlyField(source='ingredient.id')
@@ -26,12 +29,12 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = IngredientAmount
-        fields = {
+        fields = (
             'id',
             'name',
             'measurement_unit',
             'amount',
-        }
+        )
 
 class IngredientsTupleSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
@@ -46,27 +49,15 @@ class IngredientsTupleSerializer(serializers.ModelSerializer):
             'amount',
             )
 
-
-class RecipeTupleSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Recipe
-        fields = {
-            'id',
-            'name',
-            'image',
-            'cooking_time',
-        }
-
-
 class RecipeListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
     author = UserSerializer(read_only=True)
-    ingredients = serializers.SerializerMethodField()
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.BooleanField()
+    is_in_shopping_cart = serializers.BooleanField()
+    
     class Meta:
         model = Recipe
-        fields = {
+        fields = (
             'id',
             'tags',
             'author',
@@ -76,33 +67,9 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'text',
             'coocking_time',
             'is_favorited',
-            'is_in_shopping_cart',
-        }
-
-    def get_ingredients(self, obj):
-        ingredients_list = IngredientAmount.objects.filter(recipe=obj)
-        ingredients_data = IngredientAmountSerializer(ingredients_list, many=True).data
-        return ingredients_data
-
-    def get_is_favorited(self, obj):
-        request = self.context.get('request')
-        user = request.user
-        if not request or not user.is_authenticated:
-            return False
-        favorite_exists = Favourite.objects.filter(recipe=obj, user=user).exists()
-        return favorite_exists
-
-    def get_is_in_shopping_cart(self, obj):
-        request = self.context.get('request')
-        user = request.user
-        if not request or not user.is_authenticated:
-            return False
-        shopping_cart_exists = ShoppingCart.objects.filter(
-            recipe=obj,
-            user=user
+            'is_in_shopping_cart'
         )
-        return shopping_cart_exists
-
+    
 
 class RecipeTupleSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
@@ -113,7 +80,8 @@ class RecipeTupleSerializer(serializers.ModelSerializer):
             'id', 
             'name', 
             'image', 
-            'cooking_time')
+            'cooking_time',
+            )
         read_only_fields = (
             'id', 
             'name', 
@@ -127,7 +95,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
     ingredients = IngredientsTupleSerializer(
         many=True
     )
-    tags = serializers.PrimaryKeyReatedField(
+    tags = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Tag.objects.all(),
     )
@@ -136,7 +104,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = {
+        fields = (
             'id',
             'author',
             'ingredients',
@@ -145,7 +113,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
             'name',
             'text',
             'cooking_time',
-        }
+        )
 
     def add_stuff_to_recipe(recipe, tags, ingredients):
         for tag in tags:

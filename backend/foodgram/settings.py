@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'djoser',
     'django_filters',
     'drf_spectacular',
-
+    'api',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -133,6 +134,8 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ),
 }
+
+#AUTH_USER_MODEL = 'users.models.User'
 
 DJOSER = {
     "LOGIN_FIELD": "email",

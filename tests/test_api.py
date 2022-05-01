@@ -17,7 +17,7 @@ class TestTagAPI:
     def test_tag_id_not_found(self, user_client, tag):
         response = user_client.get(f'/api/tags/{tag.id}/')
         assert response.status_code != 404, (
-            f'Тег с tag_id {tag.id} не найден, проверьте правильность работы urls и view-функции'
+            f'Тег с tag_id {tag.id} не найден, проверьте правильность работы urls.py и view-функции'
         )
 
 class TestIngredientAPI:
@@ -26,5 +26,5 @@ class TestIngredientAPI:
         response = user_client.get('/api/ingredients/')
 
         assert response.status_code != 404, (
-            'Страница `/api/tags/` не найдена, проверьте этот адрес в *urls.py*'
+            'Страница `/api/ingredients/` не найдена, проверьте этот адрес в *urls.py*'
         )

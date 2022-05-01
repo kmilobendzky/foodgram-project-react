@@ -56,10 +56,10 @@ class FollowSerializer(serializers.ModelSerializer):
         source='following.username'
     )
     first_name = serializers.ReadOnlyField(
-        suorce='following.first_name'
+        source='following.first_name'
     )
     last_name = serializers.ReadOnlyField(
-        suorce='following.last_name'
+        source='following.last_name'
     )
     is_subscribed = serializers.SerializerMethodField()
     recipes = serializers.SerializerMethodField()

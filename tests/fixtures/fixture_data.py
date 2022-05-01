@@ -16,3 +16,8 @@ def tag_2():
 def ingredient():
     from backend.api.models import Ingredient
     return Ingredient.objects.create(name='Говядина', measurement_unit='г')
+
+@pytest.fixture
+def ingredient_2():
+    from backend.api.models import Ingredient
+    return Ingredient.objects.create(name='Свинина', measurement_unit='г')
