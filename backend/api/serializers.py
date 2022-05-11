@@ -115,6 +115,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
+    @staticmethod
     def add_stuff_to_recipe(recipe, tags, ingredients):
         for tag in tags:
             recipe.tags.add(tag)
@@ -148,6 +149,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
             **validated_data,
         )
         self.add_stuff_to_recipe(recipe, tags, ingredients)
+        return recipe
 
     def update(self, recipe, validated_data):
         recipe.tags.clear()
@@ -158,3 +160,50 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
         recipe.text = ('text', recipe.text)
         self.add_stuff_to_recipe(recipe, recipe.tags, recipe.ingredients)
         return recipe
+
+class FavouriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Favourite
+        fields = (
+            'user',
+            'recipe',
+        )
+
+    def validate(self, data):
+        request = self.context.get('request')
+        if not request or request.user.is_anonymous:
+            return False
+        recipe = data['recipe']
+        if Favourite.objects.filter(
+            user=request.user,
+            recipe=recipe
+            ).exists():
+            raise serializers.ValidationError({
+                'status': 'Рецепт уже есть в избранном!'
+            })
+        return data
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipeTupleSerializer(
+            instance.recipe,
+            context=context
+            ).data
+
+
+class ShoppingCartSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ShoppingCart
+        fields = (
+            'user',
+            'recipe',
+        )
+
+    def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipeTupleSerializer(
+            instance.recipe,
+            context=context
+            ).data
