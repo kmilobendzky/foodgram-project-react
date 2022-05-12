@@ -1,21 +1,18 @@
+import rest_framework.permissions as permissions
+from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
+                        ShoppingCart, Tag)
+from api.serializers import (FavouriteSerializer, IngredientSerializer,
+                             RecipeCreationSerializer, RecipeListSerializer,
+                             ShoppingCartSerializer, TagSerializer)
+from api.pagination import CustomPaginationClass
+from django.db.models import Exists, OuterRef, Sum
 from django.http import HttpResponse
-from django.shortcuts import render
-from django.shortcuts import get_object_or_404
-from api.models import Tag, Ingredient, Recipe, Favourite, ShoppingCart, IngredientAmount
+from django.shortcuts import get_object_or_404, render
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
-from api.serializers import (
-    TagSerializer, 
-    IngredientSerializer, 
-    RecipeCreationSerializer,
-    RecipeListSerializer,
-    FavouriteSerializer,
-    ShoppingCartSerializer)
-from rest_framework.decorators import action
 from rest_framework import filters, status, viewsets
-import rest_framework.permissions as permissions
-from django.db.models import Exists, OuterRef, Sum
+from rest_framework.decorators import action
 from rest_framework.response import Response
 
 
@@ -36,7 +33,6 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
-
     serializer_class = RecipeListSerializer
     permission_classes= (permissions.IsAuthenticatedOrReadOnly,)
 
@@ -57,9 +53,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe=OuterRef('pk')
         )
         queryset = Recipe.objects.all().annotate(
-            is_favorited=Exists(favorite),
-            is_in_shopping_cart=Exists(shooping_cart)
-        )
+                is_favorited=Exists(favorite),
+                is_in_shopping_cart=Exists(shooping_cart)
+            )
         return queryset
 
     

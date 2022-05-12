@@ -1,7 +1,7 @@
-from api.models import (
-    Favourite, Ingredient, IngredientAmount,
-    Recipe, ShoppingCart, Tag)
+from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
+                        ShoppingCart, Tag)
 from django.contrib import admin
+
 
 @admin.register(Favourite)
 class FavouriteAdmin(admin.ModelAdmin):

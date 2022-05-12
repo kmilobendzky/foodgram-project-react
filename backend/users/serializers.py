@@ -1,23 +1,22 @@
+from api.models import Recipe
+from api.serializers import RecipeTupleSerializer
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from api.serializers import RecipeTupleSerializer
 from rest_framework import serializers
-from api.models import Recipe
 from users.models import Follow
-
 
 User = get_user_model()
 
 class UserCreationSerializer(UserCreateSerializer):
     class Meta:
         model = User
-        fields = {
+        fields = (
             'id',
             'email',
             'username',
             'password', 
             'first_name',
-            'last_name',}
+            'last_name',)
         extra_kwargs = {
             'email': {'required': True},
             'username': {'required': True},
@@ -31,13 +30,13 @@ class UserSerializer(UserSerializer):
     has_subscription = serializers.SerializerMethodField()
     class Meta:
         model = User
-        fields = {
+        fields = (
             'id',
             'email',
             'username', 
             'first_name',
             'last_name',
-            'has_subscription',}
+            'has_subscription',)
 
     def get_has_subscription(self, obj):
         user = self.context.get('request').user
@@ -67,7 +66,7 @@ class FollowSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Follow
-        fields = {
+        fields = (
             'id',
             'email',
             'username',
@@ -76,7 +75,7 @@ class FollowSerializer(serializers.ModelSerializer):
             'is_subscribed',
             'recipes',
             'recipes_count',
-        }
+        )
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user

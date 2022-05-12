@@ -1,6 +1,7 @@
 import pytest
-from backend.api.models import Tag
 from django.contrib.auth import get_user_model
+
+from backend.api.models import Tag
 
 
 class TestTagAPI:
