@@ -1,19 +1,17 @@
 import rest_framework.permissions as permissions
-from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
-                        ShoppingCart, Tag)
-from api.serializers import (FavouriteSerializer, IngredientSerializer,
-                             RecipeCreationSerializer, RecipeListSerializer,
-                             ShoppingCartSerializer, TagSerializer)
-from api.pagination import CustomPaginationClass
 from django.db.models import Exists, OuterRef, Sum
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfgen import canvas
+from django.shortcuts import get_object_or_404
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
+                        ShoppingCart, Tag)
+from api.pagination import CustomPaginationClass
+from api.serializers import (FavouriteSerializer, IngredientSerializer,
+                             RecipeCreationSerializer, RecipeListSerializer,
+                             ShoppingCartSerializer, TagSerializer)
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -34,7 +32,7 @@ class IngredientViewSet(viewsets.ModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeListSerializer
-    permission_classes= (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     pagination_class = CustomPaginationClass
 
     def get_serializer_class(self):
@@ -54,9 +52,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe=OuterRef('pk')
         )
         queryset = Recipe.objects.all().annotate(
-                is_favorited=Exists(favorite),
-                is_in_shopping_cart=Exists(shooping_cart)
-            )
+            is_favorited=Exists(favorite),
+            is_in_shopping_cart=Exists(shooping_cart))
         return queryset
 
     @staticmethod
@@ -88,8 +85,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         detail=True,
         methods=['POST', 'DELETE'],
         url_path='favorite',
-        permission_classes=[permissions.IsAuthenticated]
-        )
+        permission_classes=[permissions.IsAuthenticated])
     def favorite(self, request, pk):
         if self.request.method == 'POST':
             return self.creation_method(
@@ -101,13 +97,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 request=request,
                 pk=pk,
                 model=Favourite)
-    
+
     @action(
         detail=True,
         methods=['POST', 'DELETE'],
         url_path='shopping_cart',
-        permission_classes=[permissions.IsAuthenticated]
-        )
+        permission_classes=[permissions.IsAuthenticated])
     def shopping_cart(self, request, pk):
         if self.request.method == 'POST':
             return self.creation_method(
@@ -123,33 +118,32 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=['GET'],
-        permission_classes=[permissions.IsAuthenticated]
-        )
+        permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
-        shopping_list = {}
+        forming_list = {}
         ingredients = IngredientAmount.objects.filter(
             recipe__cart_recipe__user=request.user).values_list(
                 'ingredient__name',
-                'ingredient__measurement_unit',
-            ).annotate(amount=Sum('amount'))
+                'ingredient__measurement_unit',).annotate(amount=Sum('amount'))
         for ingredient in ingredients:
             ingredient_name = ingredient[0]
-            if ingredient_name not in shopping_list:
-                shopping_list[ingredient_name] = {
+            if ingredient_name not in forming_list:
+                forming_list[ingredient_name] = {
                     'measurement_unit': ingredient[1],
                     'amount': ingredient[2],
                 }
             else:
-                shopping_list[ingredient_name]['amount'] += ingredient[2]
+                forming_list[ingredient_name]['amount'] += ingredient[2]
             final_list = ['Ingredient list\n\n']
-        for ingredient, value in shopping_list.items():
+        for ingredient, value in forming_list.items():
             final_list.append(
-                f" {ingredient} - {value['amount']} " f"{value['measurement_unit']}\n"
-            )
+                f' {ingredient} - {value["amount"]} '
+                f'{value["measurement_unit"]}\n')
         return HttpResponse(
             final_list,
             {
-                "Content-Type": "text/plain",
-                "Content-Disposition": 'attachment; filename="shopping_list.txt"',
+                'Content-Type': 'text/plain',
+                'Content-Disposition':
+                'attachment; filename="shopping_list.txt"',
             },
         )

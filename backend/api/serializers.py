@@ -1,32 +1,38 @@
-from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
-                        ShoppingCart, Tag)
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
 from users.models import Follow
 
+from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
+                        ShoppingCart, Tag)
+
 User = get_user_model()
 
+
 class UserSerializer(UserSerializer):
-    has_subscription = serializers.SerializerMethodField()
+
+    is_subscribed = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = (
             'id',
             'email',
-            'username', 
+            'username',
             'first_name',
             'last_name',
             'has_subscription',)
 
-    def get_has_subscription(self, obj):
+    def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         if not user.is_authenticated:
             return False
         return Follow.objects.filter(user=user, following=obj).exists()
 
+
 class TagSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Tag
         fields = '__all__'
@@ -44,6 +50,7 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
     measurement_unit = serializers.ReadOnlyField(
         source='ingredient.measurement_unit'
     )
+
     class Meta:
         model = IngredientAmount
         fields = (
@@ -52,6 +59,7 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
             'measurement_unit',
             'amount',
         )
+
 
 class IngredientsTupleSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
@@ -63,8 +71,8 @@ class IngredientsTupleSerializer(serializers.ModelSerializer):
         model = IngredientAmount
         fields = (
             'id',
-            'amount',
-            )
+            'amount',)
+
 
 class RecipeListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
@@ -74,7 +82,8 @@ class RecipeListSerializer(serializers.ModelSerializer):
         many=True
     )
     is_favorited = serializers.BooleanField(read_only=True, required=False)
-    is_in_shopping_cart = serializers.BooleanField(read_only=True, required=False)
+    is_in_shopping_cart = serializers.BooleanField(
+        read_only=True, required=False)
 
     class Meta:
         model = Recipe
@@ -90,25 +99,25 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'is_favorited',
             'is_in_shopping_cart'
         )
-    
+
 
 class RecipeTupleSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
-    
+
     class Meta:
         model = Recipe
         fields = (
-            'id', 
-            'name', 
-            'image', 
-            'cooking_time',
-            )
+            'id',
+            'name',
+            'image',
+            'cooking_time',)
         read_only_fields = (
-            'id', 
-            'name', 
-            'image', 
+            'id',
+            'name',
+            'image',
             'cooking_time')
-    
+
+
 class RecipeCreationSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
     text = serializers.CharField()
@@ -160,7 +169,6 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
                 amount=ingredient['amount']
             )
 
-
     def create(self, validated_data):
         author = self.context.get('request').user
         tags = validated_data.pop('tags')
@@ -181,14 +189,10 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
             instance)
         return super().update(instance, validated_data)
 
-
     def to_representation(self, instance):
         request = self.context.get('request')
         context = {'request': request}
         return RecipeListSerializer(instance, context=context).data
-
-    
-
 
 
 class FavouriteSerializer(serializers.ModelSerializer):
@@ -206,8 +210,7 @@ class FavouriteSerializer(serializers.ModelSerializer):
         recipe = data['recipe']
         if Favourite.objects.filter(
             user=request.user,
-            recipe=recipe
-            ).exists():
+                recipe=recipe).exists():
             raise serializers.ValidationError({
                 'status': 'Рецепт уже есть в избранном!'
             })
@@ -218,8 +221,7 @@ class FavouriteSerializer(serializers.ModelSerializer):
         context = {'request': request}
         return RecipeTupleSerializer(
             instance.recipe,
-            context=context
-            ).data
+            context=context).data
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
@@ -235,5 +237,4 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         context = {'request': request}
         return RecipeTupleSerializer(
             instance.recipe,
-            context=context
-            ).data
+            context=context).data

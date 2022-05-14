@@ -3,9 +3,11 @@ from api.serializers import RecipeTupleSerializer
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
-from users.models import Follow
+
+from .models import Follow
 
 User = get_user_model()
+
 
 class UserCreationSerializer(UserCreateSerializer):
     class Meta:
@@ -14,7 +16,7 @@ class UserCreationSerializer(UserCreateSerializer):
             'id',
             'email',
             'username',
-            'password', 
+            'password',
             'first_name',
             'last_name',)
         extra_kwargs = {
@@ -22,23 +24,23 @@ class UserCreationSerializer(UserCreateSerializer):
             'username': {'required': True},
             'password': {'required': True},
             'first_name': {'required': True},
-            'last_name': {'required': True},
-            }
+            'last_name': {'required': True}, }
 
 
 class UserSerializer(UserSerializer):
-    has_subscription = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField()
+
     class Meta:
         model = User
         fields = (
             'id',
             'email',
-            'username', 
+            'username',
             'first_name',
             'last_name',
             'has_subscription',)
 
-    def get_has_subscription(self, obj):
+    def get_is_subscribed(self, obj):
         user = self.context.get('request').user
         if not user.is_authenticated:
             return False

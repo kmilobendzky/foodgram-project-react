@@ -4,6 +4,7 @@ from django.db import models
 
 User = get_user_model()
 
+
 class Tag(models.Model):
     BLUE = '#06266F'
     RED = '#A60000'
@@ -31,7 +32,7 @@ class Tag(models.Model):
     color = models.CharField(
         max_length=7,
         choices=COLOR_CHOICES,
-        unique = True,
+        unique=True,
         verbose_name='Цвет',
     )
     slug = models.SlugField(
@@ -48,6 +49,7 @@ class Tag(models.Model):
     def __str__(self):
         return f'{self.name}'
 
+
 class Ingredient(models.Model):
     name = models.CharField(
         max_length=150,
@@ -59,12 +61,13 @@ class Ingredient(models.Model):
     )
 
     class Meta:
-        ordering = ['id',]
+        ordering = ['id']
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
     def __str__(self):
         return f'{self.name}'
+
 
 class Recipe(models.Model):
     tags = models.ManyToManyField(
@@ -96,7 +99,7 @@ class Recipe(models.Model):
         verbose_name='Время приготовления',
         validators=[MinValueValidator(
             1,
-            message='Минимальное время приготовления - 1 минута!'),],
+            message='Минимальное время приготовления - 1 минута!'), ],
     )
 
 
