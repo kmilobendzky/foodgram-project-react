@@ -21,7 +21,7 @@ class TagViewSet(viewsets.ModelViewSet):
     serializer_class = TagSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    pagination_class = None
+    pagination_class = CustomPaginationClass
     search_fields = ('name')
 
 
@@ -29,12 +29,13 @@ class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    pagination_class = None
+    pagination_class = CustomPaginationClass
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeListSerializer
     permission_classes= (permissions.IsAuthenticatedOrReadOnly,)
+    pagination_class = CustomPaginationClass
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
@@ -58,7 +59,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             )
         return queryset
 
-    
+    @staticmethod
     def creation_method(request, pk, serializers):
         user = request.user.id
         data = {
@@ -75,6 +76,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    @staticmethod
     def deletion_method(request, pk, model):
         user = request.user.id
         recipe = get_object_or_404(Recipe, id=pk)
@@ -84,51 +86,39 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(
         detail=True,
-        methods=['POST'],
+        methods=['POST', 'DELETE'],
         url_path='favorite',
         permission_classes=[permissions.IsAuthenticated]
         )
-    def create_favorite(self, request, pk):
-        return self.creation_method(
-            request=request,
-            pk=pk,
-            serializers=FavouriteSerializer)
-
-    @action(
-        detail=True,
-        methods=['DELETE'],
-        url_path='favorite',
-        permission_classes=[permissions.IsAuthenticated]
-        )
-    def delete_favorite(self, request, pk):
-        return self.deletion_method(
-            request=request,
-            pk=pk,
-            serializers=FavouriteSerializer)
+    def favorite(self, request, pk):
+        if self.request.method == 'POST':
+            return self.creation_method(
+                request=request,
+                pk=pk,
+                serializers=FavouriteSerializer)
+        elif self.request.method == 'DELETE':
+            return self.deletion_method(
+                request=request,
+                pk=pk,
+                model=Favourite)
     
     @action(
         detail=True,
-        methods=['POST'],
+        methods=['POST', 'DELETE'],
         url_path='shopping_cart',
         permission_classes=[permissions.IsAuthenticated]
         )
-    def create_shopping_cart(self, request, pk):
-        return self.creation_method(
-            request=request,
-            pk=pk,
-            serializers=ShoppingCartSerializer)
-
-    @action(
-        detail=True,
-        methods=['DELETE'],
-        url_path='shopping_cart',
-        permission_classes=[permissions.IsAuthenticated]
-        )
-    def delete_favorite(self, request, pk):
-        return self.deletion_method(
-            request=request,
-            pk=pk,
-            serializers=ShoppingCartSerializer)
+    def shopping_cart(self, request, pk):
+        if self.request.method == 'POST':
+            return self.creation_method(
+                request=request,
+                pk=pk,
+                serializers=ShoppingCartSerializer)
+        elif self.request.method == 'DELETE':
+            return self.deletion_method(
+                request=request,
+                pk=pk,
+                model=ShoppingCart)
 
     @action(
         detail=False,
@@ -138,9 +128,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         shopping_list = {}
         ingredients = IngredientAmount.objects.filter(
-            recipe__recipe_carts__user=request.user).values_list(
+            recipe__cart_recipe__user=request.user).values_list(
                 'ingredient__name',
-                'inredient_measurements_unit',
+                'ingredient__measurement_unit',
             ).annotate(amount=Sum('amount'))
         for ingredient in ingredients:
             ingredient_name = ingredient[0]
@@ -151,28 +141,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
                 }
             else:
                 shopping_list[ingredient_name]['amount'] += ingredient[2]
-
-        pdfmetrics.registerFont(
-            TTFont('Handicraft', 'data/Handicraft.ttf', 'UTF-8')
-        )
-        response = HttpResponse(
-            content_type='application/pdf')
-        response['Content-Disposition'] = (
-            'attachment; filename="shopping_list.txt"'
+            final_list = ['Ingredient list\n\n']
+        for ingredient, value in shopping_list.items():
+            final_list.append(
+                f" {ingredient} - {value['amount']} " f"{value['measurement_unit']}\n"
             )
-        page = canvas.Canvas(response)
-        page.setFont('Handicraft', size=20)
-        page.drawString(200, 800, 'Список покупок')
-        page.setFont('Handicraft', size=16)
-        height = 800
-        for ing, (name, data) in enumerate(
-            shopping_list.items(), 1):
-            page.drawString(
-                75, height, (
-                    f'{ing}. {name} - {data["amount"]} '
-                    f'{data["measurement_unit"]}')
-                    )
-            height -= 25
-        page.showPage()
-        page.save()
-        return response
+        return HttpResponse(
+            final_list,
+            {
+                "Content-Type": "text/plain",
+                "Content-Disposition": 'attachment; filename="shopping_list.txt"',
+            },
+        )

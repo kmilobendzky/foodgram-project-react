@@ -9,7 +9,7 @@ urlpatterns = [
         name='subscriptions'
     ),
     path(
-        'users/<int:user_id>/subscribe/',
+        'users/<int:pk>/subscribe/',
         FollowViewSet.as_view(),
         name='subscribe'
     ),
