@@ -1,9 +1,11 @@
 import rest_framework.permissions as permissions
-from api.pagination import CustomPaginationClass
+from django.db.models import Exists, OuterRef
 from rest_framework import status
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from api.pagination import CustomPaginationClass
 
 from .models import Follow, User
 from .serializers import FollowSerializer
@@ -13,6 +15,15 @@ class FollowViewSet(APIView):
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination = CustomPaginationClass
+
+    def get_queryset(self):
+        user = self.request.user
+        subscribtion = Follow.objects.filter(
+            user=user,
+            following=OuterRef('pk')
+        )
+        return Follow.objects.all().annotate(
+            is_subscribed=Exists(subscribtion),)
 
     def post(self, request, pk):
         user = self.request.user
@@ -51,11 +62,15 @@ class FollowViewSet(APIView):
 
 
 class FollowListView(ListAPIView):
-    queryset = Follow.objects.all()
     serializer_class = FollowSerializer
     permission_classes = [permissions.IsAuthenticated]
     pagination_class = CustomPaginationClass
 
     def get_queryset(self):
         user = self.request.user
-        return Follow.objects.filter(user=user)
+        subscribtion = Follow.objects.filter(
+            user=user,
+            following=OuterRef('pk')
+        )
+        return Follow.objects.all().annotate(
+            is_subscribed=Exists(subscribtion),)

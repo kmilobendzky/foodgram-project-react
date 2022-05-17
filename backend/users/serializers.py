@@ -1,12 +1,21 @@
-from api.models import Recipe
-from api.serializers import RecipeTupleSerializer
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 
+from api.models import Recipe
+from api.serializers import RecipeTupleSerializer
+
 from .models import Follow
 
 User = get_user_model()
+
+
+def is_subscribed(self, obj):
+    user = self.context.get('request').user
+    following = obj.id
+    subscription = (Follow.objects.filter(
+        user=user, following=following).exists() and user.is_authenticated)
+    return subscription
 
 
 class UserCreationSerializer(UserCreateSerializer):
@@ -38,13 +47,10 @@ class UserSerializer(UserSerializer):
             'username',
             'first_name',
             'last_name',
-            'has_subscription',)
+            'is_subscribed',)
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if not user.is_authenticated:
-            return False
-        return Follow.objects.filter(user=user, following=obj).exists()
+        return is_subscribed(self, obj)
 
 
 class FollowSerializer(serializers.ModelSerializer):
@@ -80,13 +86,7 @@ class FollowSerializer(serializers.ModelSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if not user.is_authenticated:
-            return False
-        following = obj.id
-        subscription = Follow.objects.filter(
-            user=user, following=following).exists()
-        return subscription
+        return is_subscribed(self, obj)
 
     def get_recipes(self, obj):
         author = obj.following

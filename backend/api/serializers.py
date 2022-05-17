@@ -2,10 +2,10 @@ from django.contrib.auth import get_user_model
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from users.models import Follow
 
 from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
                         ShoppingCart, Tag)
+from users.models import Follow
 
 User = get_user_model()
 
@@ -22,7 +22,7 @@ class UserSerializer(UserSerializer):
             'username',
             'first_name',
             'last_name',
-            'has_subscription',)
+            'is_subscribed',)
 
     def get_is_subscribed(self, obj):
         user = self.context.get('request').user
@@ -62,10 +62,10 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
 
 
 class IngredientsTupleSerializer(serializers.ModelSerializer):
+    amount = serializers.IntegerField(min_value=1)
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
     )
-    amount = serializers.IntegerField(min_value=1)
 
     class Meta:
         model = IngredientAmount
@@ -115,7 +115,7 @@ class RecipeTupleSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'image',
-            'cooking_time')
+            'cooking_time',)
 
 
 class RecipeCreationSerializer(serializers.ModelSerializer):
