@@ -9,6 +9,12 @@ from users.models import Follow
 
 User = get_user_model()
 
+def is_subscribed(self, obj):
+    user = self.context.get('request').user
+    following = obj.id
+    subscription = (Follow.objects.filter(
+        user=user, following=following).exists() and user.is_authenticated)
+    return subscription
 
 class UserSerializer(UserSerializer):
 
@@ -25,10 +31,7 @@ class UserSerializer(UserSerializer):
             'is_subscribed',)
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if not user.is_authenticated:
-            return False
-        return Follow.objects.filter(user=user, following=obj).exists()
+        return is_subscribed(self, obj)
 
 
 class TagSerializer(serializers.ModelSerializer):

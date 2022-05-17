@@ -1,9 +1,8 @@
+from api.models import Recipe
+from api.serializers import RecipeTupleSerializer
 from django.contrib.auth import get_user_model
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
-
-from api.models import Recipe
-from api.serializers import RecipeTupleSerializer
 
 from .models import Follow
 

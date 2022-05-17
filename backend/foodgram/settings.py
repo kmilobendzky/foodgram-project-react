@@ -24,31 +24,31 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = (
-    'django-insecure-jxhy__0_qe3mmmgcut&q6jps0@$k#sdqpylxmxtq4q%4v4bg#7')
+    "django-insecure-jxhy__0_qe3mmmgcut&q6jps0@$k#sdqpylxmxtq4q%4v4bg#7")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-EMPTY_VALUE_DISPLAY = '-NONE-'
+EMPTY_VALUE_DISPLAY = "-NONE-"
 
 ALLOWED_HOSTS = []
 
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
-    'django.contrib.sessions',
-    'django.contrib.messages',
-    'django.contrib.staticfiles',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'djoser',
-    'django_filters',
-    'drf_spectacular',
-    'api',
-    'users',
+    "django.contrib.admin",
+    "django.contrib.auth",
+    "django.contrib.contenttypes",
+    "django.contrib.sessions",
+    "django.contrib.messages",
+    "django.contrib.staticfiles",
+    "rest_framework",
+    "rest_framework.authtoken",
+    "djoser",
+    "django_filters",
+    "drf_spectacular",
+    "api",
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -169,9 +169,9 @@ DJOSER = {
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = "/static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

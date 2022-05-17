@@ -1,17 +1,16 @@
 import rest_framework.permissions as permissions
-from django.db.models import Exists, OuterRef, Sum
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
-from rest_framework import filters, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.response import Response
-
 from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
                         ShoppingCart, Tag)
 from api.pagination import CustomPaginationClass
 from api.serializers import (FavouriteSerializer, IngredientSerializer,
                              RecipeCreationSerializer, RecipeListSerializer,
                              ShoppingCartSerializer, TagSerializer)
+from django.db.models import Exists, OuterRef, Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from rest_framework import filters, status, viewsets
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -20,7 +19,7 @@ class TagViewSet(viewsets.ModelViewSet):
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
     pagination_class = CustomPaginationClass
-    search_fields = ('name')
+    search_fields = 'name'
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
@@ -42,13 +41,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreationSerializer
 
     def get_queryset(self):
-        user = self.request.user.id
+        user_id = self.request.user.id
         favorite = Favourite.objects.filter(
-            user=user,
+            user=user_id,
             recipe=OuterRef('pk')
         )
         shooping_cart = ShoppingCart.objects.filter(
-            user=user,
+            user=user_id,
             recipe=OuterRef('pk')
         )
         queryset = Recipe.objects.all().annotate(
@@ -120,6 +119,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         methods=['GET'],
         permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
+        file_name = 'shopping_list.txt'
         forming_list = {}
         ingredients = IngredientAmount.objects.filter(
             recipe__cart_recipe__user=request.user).values_list(
@@ -144,6 +144,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             {
                 'Content-Type': 'text/plain',
                 'Content-Disposition':
-                'attachment; filename="shopping_list.txt"',
+                f'attachment; filename={file_name}',
             },
         )

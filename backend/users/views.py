@@ -1,11 +1,10 @@
 import rest_framework.permissions as permissions
+from api.pagination import CustomPaginationClass
 from django.db.models import Exists, OuterRef
 from rest_framework import status
 from rest_framework.generics import ListAPIView, get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
-from api.pagination import CustomPaginationClass
 
 from .models import Follow, User
 from .serializers import FollowSerializer
@@ -46,7 +45,7 @@ class FollowViewSet(APIView):
             following=following)
         serializer = FollowSerializer(
             subscription,
-            context={"request": request})
+            context={'request': request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete(self, request, pk):
