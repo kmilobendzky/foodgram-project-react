@@ -44,12 +44,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
         user_id = self.request.user.id
         favorite = Favourite.objects.filter(
             user=user_id,
-            recipe=OuterRef('pk')
-        )
+            recipe=OuterRef('pk')).all()
         shooping_cart = ShoppingCart.objects.filter(
             user=user_id,
-            recipe=OuterRef('pk')
-        )
+            recipe=OuterRef('pk')).all()
         queryset = Recipe.objects.all().annotate(
             is_favorited=Exists(favorite),
             is_in_shopping_cart=Exists(shooping_cart))
