@@ -1,13 +1,15 @@
 from django.contrib.auth import get_user_model
+from django.db import transaction
 from djoser.serializers import UserSerializer
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
+from users.models import Follow
 
 from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
                         ShoppingCart, Tag)
-from users.models import Follow
 
 User = get_user_model()
+
 
 def is_subscribed(self, obj):
     user = self.context.get('request').user
@@ -15,6 +17,7 @@ def is_subscribed(self, obj):
     subscription = (Follow.objects.filter(
         user=user, following=following).exists() and user.is_authenticated)
     return subscription
+
 
 class UserSerializer(UserSerializer):
 
@@ -149,7 +152,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
         )
 
     def validate(self, data):
-        ingredients = self.initial_data.get('ingredients')
+        ingredients = data.get('ingredients')
         if not ingredients:
             raise serializers.ValidationError(
                 'В рецепте должны быть ингредиенты!'
@@ -172,6 +175,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
                 amount=ingredient['amount']
             )
 
+    @transaction.atomic
     def create(self, validated_data):
         author = self.context.get('request').user
         tags = validated_data.pop('tags')
@@ -183,6 +187,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
             recipe)
         return recipe
 
+    @transaction.atomic
     def update(self, instance, validated_data):
         instance.tags.clear()
         IngredientAmount.objects.filter(recipe=instance).delete()

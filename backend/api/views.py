@@ -1,16 +1,17 @@
 import rest_framework.permissions as permissions
-from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
-                        ShoppingCart, Tag)
-from api.pagination import CustomPaginationClass
-from api.serializers import (FavouriteSerializer, IngredientSerializer,
-                             RecipeCreationSerializer, RecipeListSerializer,
-                             ShoppingCartSerializer, TagSerializer)
 from django.db.models import Exists, OuterRef, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
+
+from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
+                        ShoppingCart, Tag)
+from api.pagination import CustomPaginationClass
+from api.serializers import (FavouriteSerializer, IngredientSerializer,
+                             RecipeCreationSerializer, RecipeListSerializer,
+                             ShoppingCartSerializer, TagSerializer)
 
 
 class TagViewSet(viewsets.ModelViewSet):
@@ -37,8 +38,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return RecipeListSerializer
-        else:
-            return RecipeCreationSerializer
+        return RecipeCreationSerializer
 
     def get_queryset(self):
         user_id = self.request.user.id

@@ -1,5 +1,4 @@
 import rest_framework.permissions as permissions
-from api.pagination import CustomPaginationClass
 from django.db.models import Exists, OuterRef
 from rest_framework import status
 from rest_framework.generics import ListAPIView, get_object_or_404
@@ -8,6 +7,7 @@ from rest_framework.views import APIView
 
 from .models import Follow, User
 from .serializers import FollowSerializer
+from api.pagination import CustomPaginationClass
 
 
 class FollowViewSet(APIView):
