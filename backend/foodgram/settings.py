@@ -1,6 +1,10 @@
 import os
 from pathlib import Path
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 """
 Django settings for foodgram project.
 
@@ -12,8 +16,6 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
-from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -31,7 +33,13 @@ DEBUG = False
 
 EMPTY_VALUE_DISPLAY = "-NONE-"
 
-ALLOWED_HOSTS = ['127.0.0.1',]
+ALLOWED_HOSTS = [
+    "localhost",
+    "51.250.19.182",
+    "kmilotube.ddns.net",
+    "backend",
+    "127.0.0.1",
+]
 
 # Application definition
 
@@ -87,13 +95,12 @@ WSGI_APPLICATION = "foodgram.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("DB_ENGINE",
-                            default="django.db.backends.postgresql",),
-        "NAME": os.getenv("DB_NAME", default="postgres",),
-        "USER": os.getenv("POSTGRES_USER", default="postgres",),
-        "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="postgres",),
-        "HOST": os.getenv("DB_HOST", default="db"),
-        "PORT": os.getenv("DB_PORT", default="5432",),
+        "ENGINE": os.environ.get("DB_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": os.environ.get("DB_NAME", default="postgres"),
+        "USER": os.environ.get("POSTGRES_USER", default="postgres"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", default="postgres"),
+        "HOST": os.environ.get("DB_HOST", default="db"),
+        "PORT": os.environ.get("DB_PORT", default="5432"),
     }
 }
 
