@@ -71,7 +71,7 @@ jobs:
           echo DB_HOST=${{ secrets.DB_HOST }} >> .env
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo DJ_SECRET_KEY=${{ secrets.DJ_SECRET_KEY }} >> .env
-          sudo docker-compose up -d --build
+          sudo docker-compose up -d --buil
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
