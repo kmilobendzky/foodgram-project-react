@@ -72,13 +72,6 @@ jobs:
           echo DB_PORT=${{ secrets.DB_PORT }} >> .env
           echo DJ_SECRET_KEY=${{ secrets.DJ_SECRET_KEY }} >> .env
           sudo docker-compose up -d --build
-          sudo docker-compose exec -T backend python manage.py makemigrations
-          sudo docker-compose exec -T backend python manage.py migrate
-          sudo docker-compose exec -T backend python manage.py makemigrations users
-          sudo docker-compose exec -T backend python manage.py migrate users
-          sudo docker-compose exec -T backend python manage.py makemigrations api
-          sudo docker-compose exec -T backend python manage.py migrate api
-          sudo docker-compose exec -T backend python manage.py add_ingredients
 
   send_message:
     runs-on: ubuntu-latest
