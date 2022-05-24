@@ -28,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("DJ_SECRET_KEY", default="_g%=@(&am7*e2@*&wexxd0$p0%yfeih+c3skf+-^j3*evrvl@_")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 EMPTY_VALUE_DISPLAY = "-NONE-"
 
