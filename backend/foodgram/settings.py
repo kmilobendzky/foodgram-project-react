@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     "kmilotube.ddns.net",
     "backend",
     "127.0.0.1",
+    "*",
 ]
 
 # Application definition
