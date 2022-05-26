@@ -83,10 +83,7 @@ class IngredientsTupleSerializer(serializers.ModelSerializer):
 class RecipeListSerializer(serializers.ModelSerializer):
     tags = TagSerializer(read_only=True, many=True)
     author = UserSerializer(read_only=True)
-    ingredients = IngredientAmountSerializer(
-        source='amount_recipe',
-        many=True
-    )
+    ingredients = serializers.SerializerMethodField()
     is_favorited = serializers.BooleanField(read_only=True, required=False)
     is_in_shopping_cart = serializers.BooleanField(
         read_only=True, required=False)
@@ -105,6 +102,10 @@ class RecipeListSerializer(serializers.ModelSerializer):
             'is_favorited',
             'is_in_shopping_cart'
         )
+
+    def get_ingredients(self, obj):
+        ingredients = IngredientAmount.objects.filter(recipe=obj)
+        return IngredientAmountSerializer(ingredients, many=True).data
 
 
 class RecipeTupleSerializer(serializers.ModelSerializer):
