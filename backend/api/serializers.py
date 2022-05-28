@@ -198,9 +198,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
         return super().update(instance, validated_data)
 
     def to_representation(self, instance):
-        request = self.context.get('request')
-        context = {'request': request}
-        return RecipeListSerializer(instance, context=context).data
+        return RecipeListSerializer(instance, context=self.context).data
 
 
 class FavouriteSerializer(serializers.ModelSerializer):
@@ -225,11 +223,9 @@ class FavouriteSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        request = self.context.get('request')
-        context = {'request': request}
         return RecipeTupleSerializer(
-            instance.recipe,
-            context=context).data
+            instance,
+            context=self.context).data
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
@@ -241,8 +237,6 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         )
 
     def to_representation(self, instance):
-        request = self.context.get('request')
-        context = {'request': request}
         return RecipeTupleSerializer(
-            instance.recipe,
-            context=context).data
+            instance,
+            context=self.context).data
