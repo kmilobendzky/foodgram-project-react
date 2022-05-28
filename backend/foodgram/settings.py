@@ -32,7 +32,7 @@ DEBUG = True
 
 EMPTY_VALUE_DISPLAY = "-NONE-"
 
-ALLOWED_HOSTS = ["*",]
+ALLOWED_HOSTS = ["*", ]
 
 # Application definition
 
