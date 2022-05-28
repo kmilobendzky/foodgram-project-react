@@ -223,9 +223,11 @@ class FavouriteSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
         return RecipeTupleSerializer(
-            instance,
-            context=self.context).data
+            instance.recipe,
+            context=context).data
 
 
 class ShoppingCartSerializer(serializers.ModelSerializer):
@@ -237,6 +239,8 @@ class ShoppingCartSerializer(serializers.ModelSerializer):
         )
 
     def to_representation(self, instance):
+        request = self.context.get('request')
+        context = {'request': request}
         return RecipeTupleSerializer(
-            instance,
-            context=self.context).data
+            instance.recipe,
+            context=context).data
