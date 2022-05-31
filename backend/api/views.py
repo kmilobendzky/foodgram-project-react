@@ -17,21 +17,21 @@ from api.serializers import (FavouriteSerializer, IngredientSerializer,
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
     filter_backends = (filters.SearchFilter,)
-    pagination_class = CustomPaginationClass
-    search_fields = 'name'
+    search_fields = ('name')
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    pagination_class = CustomPaginationClass
+    permission_classes = (permissions.AllowAny,)
+    search_fields = ('name')
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeListSerializer
+    queryset = Recipe.objects.all()
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     pagination_class = CustomPaginationClass
 
@@ -39,19 +39,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if self.request.method == 'GET':
             return RecipeListSerializer
         return RecipeCreationSerializer
-
-    def get_queryset(self):
-        user_id = self.request.user.id
-        favorite = Favourite.objects.filter(
-            user=user_id,
-            recipe=OuterRef('pk')).all()
-        shooping_cart = ShoppingCart.objects.filter(
-            user=user_id,
-            recipe=OuterRef('pk')).all()
-        queryset = Recipe.objects.all().annotate(
-            is_favorited=Exists(favorite),
-            is_in_shopping_cart=Exists(shooping_cart))
-        return queryset
 
     @staticmethod
     def creation_method(request, pk, serializers):
