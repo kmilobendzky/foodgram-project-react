@@ -128,7 +128,7 @@ class RecipeCreationSerializer(serializers.ModelSerializer):
     name = serializers.CharField()
     text = serializers.CharField()
     author = UserSerializer(required=False)
-    ingredients = IngredientsTupleSerializer(
+    ingredients = IngredientSerializer(
         many=True
     )
     tags = serializers.PrimaryKeyRelatedField(
