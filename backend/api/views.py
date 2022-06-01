@@ -18,6 +18,7 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
     permission_classes = (permissions.AllowAny,)
+    pagination_class = None
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name')
 
@@ -25,6 +26,7 @@ class TagViewSet(viewsets.ModelViewSet):
 class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
+    pagination_class = None
     permission_classes = (permissions.AllowAny,)
 
 
@@ -119,6 +121,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=[permissions.IsAuthenticated])
     def download_shopping_cart(self, request):
         forming_list = {}
+        final_list = []
         ingredients = IngredientAmount.objects.filter(
             recipe__cart_recipe__user=request.user).values_list(
                 'ingredient__name',
