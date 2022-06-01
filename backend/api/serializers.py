@@ -68,7 +68,7 @@ class IngredientAmountSerializer(serializers.ModelSerializer):
 
 
 class IngredientsTupleSerializer(serializers.ModelSerializer):
-    amount = serializers.IntegerField(min_value=1)
+    amount = serializers.IntegerField()
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredient.objects.all()
     )
@@ -110,6 +110,7 @@ class RecipeListSerializer(serializers.ModelSerializer):
             return False
         return ShoppingCart.objects.filter(
             user=request.user, recipe=obj).exists()
+
 
 class RecipeTupleSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
