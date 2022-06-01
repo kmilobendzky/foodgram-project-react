@@ -25,24 +25,24 @@ class Tag(models.Model):
     ]
 
     name = models.CharField(
-        'Название тега',
         max_length=150,
         unique=True,
+        verbose_name='Название тега',
     )
     color = models.CharField(
-        'Цвет',
         max_length=7,
         choices=COLOR_CHOICES,
         unique=True,
+        verbose_name='Цвет',
     )
     slug = models.SlugField(
-        'Slug',
         max_length=150,
         unique=True,
+        verbose_name='Slug',
     )
 
     class Meta:
-        ordering = ('name',)
+        ordering = ['name']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -52,16 +52,16 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        'Название',
         max_length=150,
+        verbose_name='Название',
     )
     measurement_unit = models.CharField(
-        'Единица измерения',
         max_length=150,
+        verbose_name='Единица измерения',
     )
 
     class Meta:
-        ordering = ('id',)
+        ordering = ['id']
         verbose_name = 'Ингредиент'
         verbose_name_plural = 'Ингредиенты'
 
@@ -87,16 +87,16 @@ class Recipe(models.Model):
         verbose_name='Ингредиент',
     )
     name = models.CharField(
-        'Название',
-        max_length=200,)
+        max_length=200,
+        verbose_name='Название',)
     image = models.ImageField(
-        'Изображение',
-        upload_to='media/',)
+        upload_to='media/',
+        verbose_name='Изображение',)
     text = models.TextField(
-        'Описание',
-        max_length=4000,)
+        max_length=4000,
+        verbose_name='Описание',)
     cooking_time = models.PositiveSmallIntegerField(
-        'Время приготовления',
+        verbose_name='Время приготовления',
         validators=[MinValueValidator(
             1,
             message='Минимальное время приготовления - 1 минута!'), ],
@@ -117,12 +117,12 @@ class IngredientAmount(models.Model):
         verbose_name='Рецепт',
     )
     amount = models.PositiveSmallIntegerField(
-        'Количество',
+        verbose_name='Количество',
         validators=[MinValueValidator],
     )
 
     class Meta:
-        ordering = ('-id',)
+        ordering = ['-id']
         verbose_name = 'Количество ингредиента'
         verbose_name_plural = 'Количество ингредиентов'
 
@@ -144,7 +144,7 @@ class Favourite(models.Model):
     )
 
     class Meta:
-        ordering = ('-id',)
+        ordering = ['-id']
         verbose_name = 'Избранное'
         verbose_name_plural = 'Избранные'
 
@@ -167,7 +167,7 @@ class ShoppingCart(models.Model):
     )
 
     class Meta:
-        ordering = ('id',)
+        ordering = ['id']
         verbose_name = 'Список покупок'
         verbose_name_plural = 'Списки покупок'
 

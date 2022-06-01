@@ -9,5 +9,5 @@ api_routes.register('ingredients', IngredientViewSet, basename='ingredients',)
 api_routes.register('recipes', RecipeViewSet, basename='recipes')
 
 urlpatterns = [
-    path('', include(api_routes.urls)),
+    path("", include(api_routes.urls)),
 ]
