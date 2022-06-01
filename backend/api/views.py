@@ -17,17 +17,15 @@ from api.serializers import (FavouriteSerializer, IngredientSerializer,
 class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.AllowAny,)
     filter_backends = (filters.SearchFilter,)
-    pagination_class = CustomPaginationClass
     search_fields = ('name')
 
 
 class IngredientViewSet(viewsets.ModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = IngredientSerializer
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    pagination_class = CustomPaginationClass
+    permission_classes = (permissions.AllowAny,)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
