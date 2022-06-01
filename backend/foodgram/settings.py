@@ -32,7 +32,11 @@ DEBUG = True
 
 EMPTY_VALUE_DISPLAY = "-NONE-"
 
-ALLOWED_HOSTS = ["*", ]
+ALLOWED_HOSTS = [    "localhost",
+    "51.250.13.154",
+    "diplomproject.sytes.net",
+    "backend",
+    "127.0.0.1",]
 
 # Application definition
 
