@@ -15,7 +15,7 @@ class RecipeFilter(filters.FilterSet):
     author = filters.ModelChoiceFilter(queryset=User.objects.all())
     is_favorited = filters.BooleanFilter(
         method='get_favorite',
-        label='Favourited',
+        label='Favorited',
     )
     is_in_shopping_cart = filters.BooleanFilter(
         method='get_shopping',
@@ -33,10 +33,10 @@ class RecipeFilter(filters.FilterSet):
 
     def get_favorite(self, queryset, name, item_value):
         if self.request.user.is_authenticated and item_value:
-            queryset = queryset.filter(recipe_favorite__user=self.request.user)
+            queryset = queryset.filter(favourite_recipe__user=self.request.user)
         return queryset
 
     def get_shopping(self, queryset, name, item_value):
         if self.request.user.is_authenticated and item_value:
-            queryset = queryset.filter(recipe_cart__user=self.request.user)
+            queryset = queryset.filter(cart_recipe__user=self.request.user)
         return queryset
