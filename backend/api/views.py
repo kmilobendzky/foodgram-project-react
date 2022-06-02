@@ -2,10 +2,12 @@ import rest_framework.permissions as permissions
 from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from api.filters import RecipeFilter
 from api.models import (Favourite, Ingredient, IngredientAmount, Recipe,
                         ShoppingCart, Tag)
 from api.pagination import CustomPaginationClass
@@ -29,11 +31,20 @@ class IngredientViewSet(viewsets.ModelViewSet):
     pagination_class = None
     permission_classes = (permissions.AllowAny,)
 
+    def get_queryset(self):
+        queryset = Ingredient.objects.all()
+        name = self.request.query_params.get('name')
+        if name:
+            queryset = queryset.filter(name__istartswith=name)
+        return queryset
+
 
 class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeListSerializer
     permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
     pagination_class = CustomPaginationClass
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
