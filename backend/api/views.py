@@ -42,18 +42,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return RecipeCreationSerializer
 
     def get_queryset(self):
-        user = self.request.user.id
-        favorite = Favourite.objects.filter(
-            user=user,
-            recipe=OuterRef('pk')
-        )
-        shooping_cart = ShoppingCart.objects.filter(
-            user=user,
-            recipe=OuterRef('pk')
-        )
-        queryset = Recipe.objects.all().annotate(
-            is_favorited=Exists(favorite),
-            is_in_shopping_cart=Exists(shooping_cart))
+        queryset = Recipe.objects.all()
         return queryset
 
     @staticmethod
