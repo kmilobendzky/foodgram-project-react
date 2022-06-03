@@ -15,14 +15,14 @@
 5. После сборки контейнеров с проектом перейдите в контейнер с бекендом `sudo docker-compose exec 
 6. Проведите миграции в проекте, соберите статики и создайте суперпользователя следующим набором команд:
 
-    python manage.py migrate
-    python manage.py makemigrations api
-    python manage.py migrate api
-    python manage.py makemigrations users
-    python manage.py migrate users
-    python manage.py add_ingredients
-    python manage.py collectstatic
-    python manage.py createsuperuser
+   - python manage.py migrate
+   - python manage.py makemigrations api
+   - python manage.py migrate api
+   - python manage.py makemigrations users
+   - python manage.py migrate users
+   - python manage.py add_ingredients
+   - python manage.py collectstatic
+   - python manage.py createsuperuser
 
 7. Перейдите в джанго-админку по эндпоинту /admin/ и создайте тэги для рецептов
 8. Проект готов!
