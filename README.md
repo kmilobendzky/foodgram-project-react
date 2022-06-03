@@ -1,11 +1,31 @@
-# Foodgram
-- Наставнику:
+# Наставнику
 - Логин админки: boss_of_this_gym
 - Пароль админки: VanDarkholm
 - Email админки (для взаимодействия с api): darkh0lm@lalamail.com
 
 
+# Foodgram
 Данный проект является продуктовым помощником. Сайт предназначен для публикации рецептов и помощи пользователю с формированием и обработкой списков покупок на основе рецептов.
+
+## Запуск проекта
+1. В домашнюю папку проекта на сервере скопируйте папку frontend из репозитория, а также файл docker-compose.yml. Создайте папку nginx.conf и поместите туда файл nginx.conf, после чего переименуйте в default.conf
+2. [Установите](https://docs.docker.com/engine/install/ubuntu/) на сервере Docker
+3. Запустите сборку контейнеров командой `sudo docker-compose build`
+4. Сделайте пуш репозитория на сервер с заполненными секретами в репозитории на Github или самостоятельно заполните ENV-файл со следующими переменными: DB_ENGINE, POSTGRES_DB DB_NAME, POSTGRES_USER, POSTGRES_PASSWORD, DB_HOST, DB_PORT, DJ_SECRET_KEY
+5. После сборки контейнеров с проектом перейдите в контейнер с бекендом `sudo docker-compose exec 
+6. Проведите миграции в проекте, соберите статики и создайте суперпользователя следующим набором команд:
+
+    python manage.py migrate
+    python manage.py makemigrations api
+    python manage.py migrate api
+    python manage.py makemigrations users
+    python manage.py migrate users
+    python manage.py add_ingredients
+    python manage.py collectstatic
+    python manage.py createsuperuser
+
+7. Перейдите в джанго-админку по эндпоинту /admin/ и создайте тэги для рецептов
+8. Проект готов!
 
 ## Техническое описание проекта
 
